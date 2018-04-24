@@ -47,24 +47,24 @@ class BinaryFileRecord
 public:
   
   uint8_t strLength;                             // 8-bit integer -> need to change to 
-  char stringBuffer[maxRecordStringLength];
+  char stringBuffer[maxRecordStringLength];      // char array (string) to hold string read from binary file
 
 };
 
 
 
 
+// Start of main
 int main(int argc, char* argv[]) {
 
-  
+
+
+  // Creates an instance of the object from class BinaryFileHeader, uses a pointer to point to address of obj
   BinaryFileHeader *myHeader = new BinaryFileHeader();
 
+
+  // Opening ifstream to read form binary file, opens file for input and uses binary flag 
   ifstream binInfile ("cs3377.bin", ios::in | ios::binary);
-
-
-
-
-
 
 
 
@@ -74,17 +74,9 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-
+  // Read binary file using BinaryFileHeader for size (how much to read from file) 
   binInfile.read((char *) myHeader, sizeof(BinaryFileHeader));
   
-
-
-
-  //cout << hex << myHeader->magicNumber << endl;
-   // cout << myHeader->versionNumber << endl;
-  //  cout << myHeader->numRecords << endl;
- 
-
 
 
 
@@ -94,72 +86,88 @@ int main(int argc, char* argv[]) {
 
 
   // Initializes the myRecord array by incrementing the address of pointer for each new set of entries
-  for (uint32_t i = 0; i < myHeader->numRecords; i++) {
+  for (uint32_t i = 0; i < myHeader->numRecords; i++) {         // Use uint32_t for i bc numRecords is uint64_t
+    // Read binary file using BinaryFileRecords for how much to read, index through each obj by adding i
     binInfile.read((char *)(myRecords + i), sizeof(BinaryFileRecord));
   }
 
 
+
+  // Closes binaryfle -> no leakage
   binInfile.close();
 
 
 
+  // Creates a string stream to build string from read uints in obj
   stringstream ss;
+
+
+
+  // Collect BinaryFileRecords data
+  //
+  // Creates array to hold data values for stringlengths and stringrecords (more than 1)
   string strlengths[myHeader->numRecords],
          strRecords[myHeader->numRecords];
 
-  //******* strLen not appearing
+  
+
+  // Uses for loop to step through each record and build a string with data from file
   for (uint32_t i = 0; i < myHeader->numRecords; i++) {
     
-    ss.clear();
-    ss << unsigned((myRecords + i)->strLength);          // Cast to unsigned to read (or uint16_t etc)
+    ss.clear();           // Clears stream before use to not have conflicting data
+
+
+    // Write strLength to stream
+    ss << unsigned((myRecords + i)->strLength);     // Cast to unsigned to read (or uint16_t etc)
+    
+    // Write what's in stream (separated by spaces) to string array
     ss >> strlengths[i];
     
+    // Writw the given string (from stringBuffer) to the string array
     strRecords[i] = (myRecords + i)->stringBuffer;
   }
 
 
 
-  
-  //cout << hex << myHeader->magicNumber << endl;
-  //cout << myHeader->versionNumber << endl;
-  // cout << myHeader->numRecords << endl;
-  
 
+  // Declare string to hold values after they are built
+  string hexVal,
+         vNum,
+         nRecords;
+ 
+  // Collect BinaryFileHeader data
+  //
+ 
+  ss.clear();        // Clear stream before use 
 
-
-
-
-
-  //stringstream ss;
-  ss.clear();
-
+  // Build string with supplied substrings and converted magicNumber
   ss << "0x" << hex << uppercase << myHeader->magicNumber << endl;   // All number values from here on are in hex
-  string hexVal;
   ss >> hexVal;
-  //cout << hexVal << endl;
+ 
 
   ss.clear();
   
-  //c_str() for c-style string
-  string vNum;
+  // Build string for versionNumber, write to string
   ss << dec << myHeader->versionNumber;                 // Must change back to decimal
   ss >> vNum;
-  // cout << vNum << endl;
-  
+ 
+ 
 
-  // Clears stream to free up space
+  
   ss.clear();
 
-  string nRecords;
-  // cout << myHeader->numRecords << endl;
+  // Build string for numRecords, write to string
   ss << myHeader->numRecords;
   ss >> nRecords;
-  //  cout << nRecords << endl;
+  
 
 
 
 
 
+  // Begin CDK implementation
+  //
+  
   WINDOW	*window;
   CDKSCREEN	*cdkscreen;
   CDKMATRIX     *myMatrix;           // CDK Screen Matrix
@@ -177,24 +185,20 @@ int main(int argc, char* argv[]) {
   int		boxWidths[] = {BOX_WIDTH, BOX_WIDTH, BOX_WIDTH, BOX_WIDTH, BOX_WIDTH, BOX_WIDTH};
   int		boxTypes[] = {vMIXED, vMIXED, vMIXED, vMIXED,  vMIXED,  vMIXED};
 
-  /*
-   * Initialize the Cdk screen.
-   *
-   * Make sure the putty terminal is large enough
-   */
+  
+  // Initialize the Cdk screen. You must czech terminal is large enough to prevent coredump
   window = initscr();
   cdkscreen = initCDKScreen(window);
 
-  /* Start CDK Colors */
+  // Start CDK Colors 
   initCDKColor();
 
-  /*
-   * Create the matrix.  Need to manually cast (const char**) to (char **)
-  */
+  
+  // Create the matrix.  Need to manually cast (const char**) to (char **)
   myMatrix = newCDKMatrix(cdkscreen, CENTER, CENTER, MATRIX_HEIGHT, MATRIX_WIDTH, MATRIX_HEIGHT, MATRIX_WIDTH,
 			  MATRIX_NAME_STRING, (char **) rowTitles, (char **) columnTitles, boxWidths,
 				     boxTypes, 1, 1, ' ', ROW, true, true, false);
-
+  // If the matrix is null error out
   if (myMatrix ==NULL)
     {
       printf("Error creating Matrix\n");
@@ -204,16 +208,12 @@ int main(int argc, char* argv[]) {
 
   
 
-
-
-  /* Display the Matrix */
+  // Display the Matrix 
   drawCDKMatrix(myMatrix, true);
 
-  /*
-   * Dipslay a message
-   */
+  
 
-
+  // Build strings to be displayed in matrix, data value to beginning of message 
   string magic = "Magic: ";
   magic.append(hexVal);
 
@@ -224,51 +224,47 @@ int main(int argc, char* argv[]) {
   numRecords.append(nRecords);
   
 
-
   ss.clear();
 
-
-  
   
   string strlen;
 
 
-  // Needs c-style string
-  setCDKMatrixCell(myMatrix, 1, 1,magic.c_str());
+
+  // Dipslay a message
+  //
+  // Needs c-style string in 4th argument
+  setCDKMatrixCell(myMatrix, 1, 1,magic.c_str());   
   setCDKMatrixCell(myMatrix, 1, 2, version.c_str());
   setCDKMatrixCell(myMatrix, 1, 3, numRecords.c_str());
 
 
-  
+  // After displaying BinaryFileHeader info, go into loop to display strlen and stringVal in appropriate location
   for (uint32_t i = 0; i < myHeader->numRecords; i++) {
-    strlen = "strlen: ";
-    strlen.append(strlengths[i]);
 
-    
-    //strRec.append(strRecords[i]);
-    setCDKMatrixCell(myMatrix, i+2, 1, strlen.c_str());
-    setCDKMatrixCell(myMatrix, i+2, 2, strRecords[i].c_str());
-    
+    // Begin building strlen
+    strlen = "strlen: ";
+    strlen.append(strlengths[i]);    // Append the length to the "strlen: "
+
+    // Set cell in appropriate locations 
+    setCDKMatrixCell(myMatrix, i+2, 1, strlen.c_str());        // strlen will be in 1st col and multiple rows
+    setCDKMatrixCell(myMatrix, i+2, 2, strRecords[i].c_str()); // records will be in 2nd col and multiple rows
+  
   }
 
-  /*
-  setCDKMatrixCell(myMatrix, 2, 1, "strlen: " + (myRecords)->strLength);
-  setCDKMatrixCell(myMatrix, 3, 1, "strlen: " + (myRecords + 1)->strLength);
-  setCDKMatrixCell(myMatrix, 4, 1, "strlen: " + (myRecords + 2)->strLength);
-  setCDKMatrixCell(myMatrix, 5, 1, "strlen: " + (myRecords + 3)->strLength);
-  */
-  //setCDKMatrixCell(myMatrix, 2, 1, stringBuff.c_str());
-  //setCDKMatrixCell(myMatrix, 3, 1, (myRecords + 1)->stringBuffer);
-  //setCDKMatrixCell(myMatrix, 4, 1, (myRecords + 2)->stringBuffer);
-  // setCDKMatrixCell(myMatrix, 5, 1, (myRecords + 3)->stringBuffer);
   
-
+  // Set matrix after filling
   drawCDKMatrix(myMatrix, true);    /* required  */
 
-  /* So we can see results, pause until a key is pressed. */
+  // So we can see results, pause until a key is pressed
   unsigned char x;
-  cin >> x;
+  cin >> x;            // Exits CDK window upon keystroke
+
+
 
   // Cleanup screen
   endCDK();
-}
+
+
+
+} // End of main

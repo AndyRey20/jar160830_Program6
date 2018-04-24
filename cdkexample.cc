@@ -90,6 +90,24 @@ int main(int argc, char* argv[]) {
 
 
 
+  stringstream ss;
+  string strlengths[myHeader->numRecords],
+         strRecords[myHeader->numRecords];
+
+  //******* strLen not appearing
+  for (uint32_t i = 0; i < myHeader->numRecords; i++) {
+    //stringstream ss2;
+    ss.clear();
+    ss << unsigned((myRecords + i)->strLength);  //cONVERST TO UNSIGNED TO READ
+    ss >> strlengths[i];
+    
+    strRecords[i] = (myRecords + i)->stringBuffer;
+
+    // cout << strlengths[i] << " " << strRecords[i] << endl;
+  }
+
+
+
   /*
   cout << hex << myHeader->magicNumber << endl;
   cout << myHeader->versionNumber << endl;
@@ -98,7 +116,11 @@ int main(int argc, char* argv[]) {
 
 
 
-  stringstream ss;
+
+
+
+  // stringstream ss;
+  ss.clear();
 
   ss << "0x" << hex << myHeader->magicNumber << endl;
   string hexVal;
@@ -188,20 +210,34 @@ int main(int argc, char* argv[]) {
   
 
 
+  ss.clear();
+  
+  
+
+
+
   // Needs c-style string
   setCDKMatrixCell(myMatrix, 1, 1,magic.c_str());
   setCDKMatrixCell(myMatrix, 1, 2, version.c_str());
   setCDKMatrixCell(myMatrix, 1, 3, numRecords.c_str());
+  
+  for (uint32_t i = 0; i < myHeader->numRecords; i++) {
+    
+    strlengths[i].append(strRecords[i]);
+    setCDKMatrixCell(myMatrix, i+2, 1, strlengths[i].c_str());
+  }
+
   /*
   setCDKMatrixCell(myMatrix, 2, 1, "strlen: " + (myRecords)->strLength);
   setCDKMatrixCell(myMatrix, 3, 1, "strlen: " + (myRecords + 1)->strLength);
   setCDKMatrixCell(myMatrix, 4, 1, "strlen: " + (myRecords + 2)->strLength);
   setCDKMatrixCell(myMatrix, 5, 1, "strlen: " + (myRecords + 3)->strLength);
-  setCDKMatrixCell(myMatrix, 2, 1, (myRecords)->stringBuffer);
-  setCDKMatrixCell(myMatrix, 3, 1, (myRecords + 1)->stringBuffer);
-  setCDKMatrixCell(myMatrix, 4, 1, (myRecords + 2)->stringBuffer);
-  setCDKMatrixCell(myMatrix, 5, 1, (myRecords + 3)->stringBuffer);
   */
+  //setCDKMatrixCell(myMatrix, 2, 1, stringBuff.c_str());
+  //setCDKMatrixCell(myMatrix, 3, 1, (myRecords + 1)->stringBuffer);
+  //setCDKMatrixCell(myMatrix, 4, 1, (myRecords + 2)->stringBuffer);
+  // setCDKMatrixCell(myMatrix, 5, 1, (myRecords + 3)->stringBuffer);
+  
 
   drawCDKMatrix(myMatrix, true);    /* required  */
 

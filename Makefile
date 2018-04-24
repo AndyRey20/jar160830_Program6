@@ -24,7 +24,7 @@ OBJS = cdkexample.o
 all: $(EXECFILE)
 
 clean:
-	rm -f $(OBJS) *.P *~ \#*
+	rm -f $(OBJS) $(EXECFILE) *.P *~ \#*
 
 $(EXECFILE): $(OBJS)
 	$(CXX) -o $@ $(OBJS) $(LDFLAGS) $(LDLIBS)

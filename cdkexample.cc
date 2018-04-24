@@ -74,6 +74,13 @@ int main(int argc, char* argv[]) {
 
 
 
+  //cout << hex << myHeader->magicNumber << endl;
+   // cout << myHeader->versionNumber << endl;
+  //  cout << myHeader->numRecords << endl;
+ 
+
+
+
 
 
   // Create an array of BinaryRecord objects
@@ -108,30 +115,32 @@ int main(int argc, char* argv[]) {
 
 
 
-  /*
-  cout << hex << myHeader->magicNumber << endl;
-  cout << myHeader->versionNumber << endl;
-  cout << myHeader->numRecords << endl;
-  */
+  
+  //cout << hex << myHeader->magicNumber << endl;
+  //cout << myHeader->versionNumber << endl;
+  // cout << myHeader->numRecords << endl;
+  
 
 
 
 
 
 
-  // stringstream ss;
+  //stringstream ss;
   ss.clear();
 
-  ss << "0x" << hex << myHeader->magicNumber << endl;
+  ss << "0x" << hex << uppercase << myHeader->magicNumber << endl;   // All number values from here on are in hex
   string hexVal;
   ss >> hexVal;
   //cout << hexVal << endl;
+
+  ss.clear();
   
   //c_str() for c-style string
   string vNum;
-  ss << myHeader->versionNumber;
+  ss << dec << myHeader->versionNumber;                 // Must change back to decimal
   ss >> vNum;
-  //cout << vNum << endl;
+  // cout << vNum << endl;
   
 
   // Clears stream to free up space
@@ -211,9 +220,11 @@ int main(int argc, char* argv[]) {
 
 
   ss.clear();
-  
-  
 
+
+  
+  
+  string strlen;
 
 
   // Needs c-style string
@@ -222,9 +233,14 @@ int main(int argc, char* argv[]) {
   setCDKMatrixCell(myMatrix, 1, 3, numRecords.c_str());
   
   for (uint32_t i = 0; i < myHeader->numRecords; i++) {
+    strlen = "strlen: ";
+    strlen.append(strlengths[i]);
+
     
-    strlengths[i].append(strRecords[i]);
-    setCDKMatrixCell(myMatrix, i+2, 1, strlengths[i].c_str());
+    //strRec.append(strRecords[i]);
+    setCDKMatrixCell(myMatrix, i+2, 1, strlen.c_str());
+    setCDKMatrixCell(myMatrix, i+2, 2, strRecords[i].c_str());
+    
   }
 
   /*

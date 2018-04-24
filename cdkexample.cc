@@ -1,27 +1,81 @@
 // Julian Reyes jar160830@utdallas.edu CS 3377.501
 
-/*
- * Usage of CDK Matrix
- *
- * File:   example1.cc
- * Author: Stephen Perkins
- * Email:  stephen.perkins@utdallas.edu
- */
 
 #include <iostream>
+#include <fstream>
+#include <stdint.h>
+
 #include "cdk.h"
 
+
+
+const int maxRecordStringLength = 25;
 
 #define MATRIX_WIDTH 3
 #define MATRIX_HEIGHT 5
 #define BOX_WIDTH 25
 #define MATRIX_NAME_STRING "Binary File Contents"
+ 
+
 
 using namespace std;
 
-
-int main()
+/*
+class BinaryFileHeader
 {
+public:
+
+  uint32_t magicNumber;
+  uint32_t versionNumber;
+  uint64_t numRecords;
+
+};
+
+
+
+class BinaryFileRecord
+{
+public:
+  
+  uint8_t strLength;
+  char stringBuffer[maxRecordStringLength];
+
+};
+
+*/
+
+
+int main(int argc, char* argv[]) {
+
+  /*
+  BinaryFileHeader *myHeader = new BinaryFileHeader();
+
+  ifstream binInfile ("cs3377.bin", ios::in | ios::binary);
+  
+
+  // If file cannot be opened, output error and exit
+  if (binInfile.fail()) {
+    cerr << "Error: Cannot open input file" << endl; 
+    return 1;
+  }
+
+
+  binInfile.read((char *) myHeader, sizeof(BinaryFileHeader));
+
+
+
+  // Create an array of BinaryRecord objects
+  BinaryFileRecord *myRecords = new BinaryFileRecord[myHeader->numRecords]();
+
+  // Initializes the myRecord array by incrementing the address of pointer for each new set of entries
+  for (uint32_t i = 0; myHeader->numRecords; i++) {
+    binInfile.read((char *)(myRecords + i), sizeof(BinaryFileRecord));
+
+  }
+
+  binInfile.close();
+  */
+
 
   WINDOW	*window;
   CDKSCREEN	*cdkscreen;
@@ -64,13 +118,32 @@ int main()
       _exit(1);
     }
 
+
+  
+
+
+
   /* Display the Matrix */
   drawCDKMatrix(myMatrix, true);
 
   /*
    * Dipslay a message
    */
-  setCDKMatrixCell(myMatrix, 2, 2, "Test Message");
+
+  /*
+  setCDKMatrixCell(myMatrix, 1, 1, "Magic: " + myHeader->magicNumber);
+  setCDKMatrixCell(myMatrix, 1, 2, "Version: " + myHeader->versionNumber);
+  setCDKMatrixCell(myMatrix, 1, 3, "NumRecords: " + myHeader->numRecords);
+  setCDKMatrixCell(myMatrix, 2, 1, "strlen: " + (myRecords)->strLength);
+  setCDKMatrixCell(myMatrix, 3, 1, "strlen: " + (myRecords + 1)->strLength);
+  setCDKMatrixCell(myMatrix, 4, 1, "strlen: " + (myRecords + 2)->strLength);
+  setCDKMatrixCell(myMatrix, 5, 1, "strlen: " + (myRecords + 3)->strLength);
+  setCDKMatrixCell(myMatrix, 2, 1, (myRecords)->stringBuffer);
+  setCDKMatrixCell(myMatrix, 3, 1, (myRecords + 1)->stringBuffer);
+  setCDKMatrixCell(myMatrix, 4, 1, (myRecords + 2)->stringBuffer);
+  setCDKMatrixCell(myMatrix, 5, 1, (myRecords + 3)->stringBuffer);
+  */
+
   drawCDKMatrix(myMatrix, true);    /* required  */
 
   /* So we can see results, pause until a key is pressed. */

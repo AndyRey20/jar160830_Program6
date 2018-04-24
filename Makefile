@@ -14,9 +14,9 @@ LDLIBS = -l cdk -l curses
 
 PROJECTNAME = CS3377.Program6.jar160830
 
-EXECFILE = cdkexample
+EXECFILE = program6
 
-OBJS = cdkexample.o
+OBJS = program6.o
 
 
 

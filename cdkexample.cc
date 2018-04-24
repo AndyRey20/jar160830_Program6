@@ -4,6 +4,9 @@
 #include <iostream>
 #include <fstream>
 #include <stdint.h>
+#include <iomanip>
+#include <sstream>
+#include <string>
 
 #include "cdk.h"
 
@@ -20,7 +23,7 @@ const int maxRecordStringLength = 25;
 
 using namespace std;
 
-/*
+
 class BinaryFileHeader
 {
 public:
@@ -42,16 +45,22 @@ public:
 
 };
 
-*/
+
 
 
 int main(int argc, char* argv[]) {
 
-  /*
+  
   BinaryFileHeader *myHeader = new BinaryFileHeader();
 
   ifstream binInfile ("cs3377.bin", ios::in | ios::binary);
-  
+
+
+
+
+
+
+
 
   // If file cannot be opened, output error and exit
   if (binInfile.fail()) {
@@ -61,20 +70,57 @@ int main(int argc, char* argv[]) {
 
 
   binInfile.read((char *) myHeader, sizeof(BinaryFileHeader));
+  
+
+
 
 
 
   // Create an array of BinaryRecord objects
   BinaryFileRecord *myRecords = new BinaryFileRecord[myHeader->numRecords]();
 
-  // Initializes the myRecord array by incrementing the address of pointer for each new set of entries
-  for (uint32_t i = 0; myHeader->numRecords; i++) {
-    binInfile.read((char *)(myRecords + i), sizeof(BinaryFileRecord));
 
+  // Initializes the myRecord array by incrementing the address of pointer for each new set of entries
+  for (uint32_t i = 0; i < myHeader->numRecords; i++) {
+    binInfile.read((char *)(myRecords + i), sizeof(BinaryFileRecord));
   }
 
+
   binInfile.close();
+
+
+
+  /*
+  cout << hex << myHeader->magicNumber << endl;
+  cout << myHeader->versionNumber << endl;
+  cout << myHeader->numRecords << endl;
   */
+
+
+
+  stringstream ss;
+
+  ss << "0x" << hex << myHeader->magicNumber << endl;
+  string hexVal;
+  ss >> hexVal;
+  //cout << hexVal << endl;
+  
+  //c_str() for c-style string
+  string vNum;
+  ss << myHeader->versionNumber;
+  ss >> vNum;
+  //cout << vNum << endl;
+  
+
+  // Clears stream to free up space
+  ss.clear();
+
+  string nRecords;
+  // cout << myHeader->numRecords << endl;
+  ss << myHeader->numRecords;
+  ss >> nRecords;
+  //  cout << nRecords << endl;
+
 
 
   WINDOW	*window;
@@ -130,10 +176,23 @@ int main(int argc, char* argv[]) {
    * Dipslay a message
    */
 
+
+  string magic = "Magic: ";
+  magic.append(hexVal);
+
+  string version = "Version: ";
+  version.append(vNum);
+
+  string numRecords = "NumRecords: ";
+  numRecords.append(nRecords);
+  
+
+
+  // Needs c-style string
+  setCDKMatrixCell(myMatrix, 1, 1,magic.c_str());
+  setCDKMatrixCell(myMatrix, 1, 2, version.c_str());
+  setCDKMatrixCell(myMatrix, 1, 3, numRecords.c_str());
   /*
-  setCDKMatrixCell(myMatrix, 1, 1, "Magic: " + myHeader->magicNumber);
-  setCDKMatrixCell(myMatrix, 1, 2, "Version: " + myHeader->versionNumber);
-  setCDKMatrixCell(myMatrix, 1, 3, "NumRecords: " + myHeader->numRecords);
   setCDKMatrixCell(myMatrix, 2, 1, "strlen: " + (myRecords)->strLength);
   setCDKMatrixCell(myMatrix, 3, 1, "strlen: " + (myRecords + 1)->strLength);
   setCDKMatrixCell(myMatrix, 4, 1, "strlen: " + (myRecords + 2)->strLength);
